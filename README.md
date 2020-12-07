@@ -8,7 +8,7 @@ Please note this is a WIP and may not be in a fully functioning state. This was 
 
 ## Usage:
 
-1. Run spotify_data.py to create the dataset from the spotify IDs and the spotify API.
+1. Run spotify_data.py to create the dataset from the spotify IDs and the spotify API. Make sure to enter your spotify API credentials in the file before you run it.
 2. Run MRS_Colab to pre-process data, train the model and save the weights.
 3. Copy the following files to 'frontend 2.0':
     - Dataset/norm_playlist.csv
