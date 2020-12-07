@@ -1,0 +1,81 @@
+<html>
+    <head>
+        <title>PREDICTIONS</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/flick/jquery-ui.css">
+        <link rel="stylesheet" href="/static/css/audio-player.css">
+
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
+        <script src="/static/js/jquery-ui-slider.js"></script>
+        <script src="/static/js/audioPlayer.js"></script>
+        <style>
+            .jumbotron{
+              background-color: #353b48;
+              color: #FFFFFF;
+              opacity: 0.7;
+            }
+            body,html{
+               height: 100%;
+               width: 100%;
+               margin: 0;
+               padding: 0;
+               background: #e74c3c !important;
+            }
+            .card{
+                background-color: #353b48;
+                color: #e74c3c
+            }
+            .progress{
+                background-color: #e74c3c;
+            }
+            #play-button{
+                background-color: #353b48;
+            }
+            #pause-button{
+                background-color: #353b48;
+            }
+            #next-button{
+                background-color: #353b48;
+            }
+            .class{
+                background-color: #353b48;
+            }
+        </style>
+    </head>
+    <body>
+        <center><h2 class="jumbotron" ><img style="width:64px;height:64px;"src = "/static/Music-icon.png">Symphonica<br><p style="font-size:40%">Music At it's Best<p></h2>
+        <section class="audio-player card">
+            <div class="card">
+                <div class="card-body">
+              <h2 class="card-title col text-center">Your Recommendations</h2>
+              <div class="row align-items-center mt-4 mb-3 mx-0">
+                <i id="play-button"class="material-icons play-pause text-primary mr-2" aria-hidden="true">play_circle_outline</i>
+                <i id="pause-button"class="material-icons play-pause d-none text-primary mr-2" aria-hidden="true">pause_circle_outline</i>
+                <i id="next-button"class="material-icons text-primary ml-2 mr-3" aria-hidden="true">skip_next</i>
+                <div class="col ml-auto rounded-circle border border-primary p-1">
+                  <img id="thumbnail" class="img-fluid rounded-circle" src="https://lorempixel.com/400/400/cats/1" alt="">
+                </div>
+              </div>
+              <div class="p-0 m-0" id="now-playing">
+                <p class="font-italic mb-0">Now Playing: </p>
+                <p class="lead" id="title"></p>
+              </div>
+              <div class="progress-bar progress col-12 mb-3">
+              </div>
+            </div>
+            <ul class="playlist list-group list-group-flush">
+                {% for song in  pred['tracks'] %}
+                    <li audio_url= "{{song['preview_url']}}"
+                    img_url="{{song['album']['images'][1]['url']}}"
+                    class="active list-group-item playlist-item">
+                    {{song['name']}} by {{song['artists'][0]['name']}}
+                    </li>
+                {% endfor %}
+            </ul>
+          </div>
+          <audio id="audio-player" class="d-none" src="" type="audio/mp3" controls="controls"></audio>
+        </section>
+    </body>
+</html>

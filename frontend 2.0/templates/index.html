@@ -1,0 +1,241 @@
+<html>
+    <head>
+        <title>Music Recommender System</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+<script
+  src="https://code.jquery.com/jquery-3.4.0.js"
+  integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="
+  crossorigin="anonymous"></script>
+<style>
+.jumbotron{
+  background-color: #353b48;
+  color: #FFFFFF;
+  opacity: 0.7;
+}
+body,html{
+   height: 100%;
+   width: 100%;
+   margin: 0;
+   padding: 0;
+   background: #e74c3c !important;
+   }
+
+   .searchbar{
+   margin-bottom: auto;
+   margin-top: 10%;
+   height: 60px;
+   background-color: #353b48;
+   border-radius: 10px;
+   padding: 10px;
+   }
+
+   .search_input{
+   color: white;
+   border: 0;
+   outline: 0;
+   background: none;
+   width: 450px;
+   padding: 0 10px;
+   caret-color:red;
+   line-height: 40px;
+   transition: width 0.4s linear;
+   }
+
+   .searchbar:hover > .search_icon{
+   background: white;
+   color: #e74c3c;
+   }
+
+   .search_icon{
+   height: 40px;
+   width: 40px;
+   float: right;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   border-radius: 50%;
+   color:white;
+   }
+   #searchlist {
+       width:80%;
+       margin-left: 11%;
+       margin-bottom: 10px;
+       border-radius: 10px;
+   }
+   #searchlist > .list-group-item{
+       background-color: #353b48;
+       color:#FFFFFF;
+       border: solid 1px black;
+   }
+
+  #snackbar {
+      visibility: hidden; /* Hidden by default. Visible on click */
+      min-width: 250px; /* Set a default minimum width */
+      margin-left: -125px; /* Divide value of min-width by 2 */
+      background-color: #333; /* Black background color */
+      color: #fff; /* White text color */
+      text-align: center; /* Centered text */
+      border-radius: 2px; /* Rounded borders */
+      padding: 16px; /* Padding */
+      position: fixed; /* Sit on top of the screen */
+      z-index: 1; /* Add a z-index if needed */
+      left: 50%; /* Center the snackbar */
+      bottom: 30px; /* 30px from the bottom */
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+    #snackbar.show {
+      visibility: visible; /* Show the snackbar */
+      /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+      However, delay the fade out process for 2.5 seconds */
+      -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+
+/* Animations to fade the snackbar in and out */
+    @-webkit-keyframes fadein {
+      from {bottom: 0; opacity: 0;}
+      to {bottom: 30px; opacity: 1;}
+    }
+
+    @keyframes fadein {
+      from {bottom: 0; opacity: 0;}
+      to {bottom: 30px; opacity: 1;}
+    }
+
+    @-webkit-keyframes fadeout {
+      from {bottom: 30px; opacity: 1;}
+      to {bottom: 0; opacity: 0;}
+    }
+
+    @keyframes fadeout {
+      from {bottom: 30px; opacity: 1;}
+      to {bottom: 0; opacity: 0;}
+    }
+</style>
+    </head>
+    <body>
+        <center><h2 class="jumbotron" ><img style="width:64px;height:64px;"src = "/static/Music-icon.png">Symphonica<br><p style="font-size:40%">Music At it's Best<p></h2>
+
+        <!-- <form method="POST" action="/songQ">
+            <input type="text" name="track" placeholder="Enter Track name">
+            <br>
+            <input type="submit" class="btn btn-success" style="margin-top: 2%; "value="Add Tracks">
+        </form>
+        <br>
+        <form method="POST" action="/recommends">
+            <input type="submit" class="btn btn-success" value="Predict Recommendation">
+        </form> -->
+        <a href="/recommends"><button class="btn btn-danger" id="prediction">View Recommendations</button></a>
+        </center>
+      <div class="container flex" style="width:45%;" id="outer">
+        <div class="d-flex justify-content-center h-0">
+          <div class="searchbar">
+          <input class="search_input" type="text" name="searchbar" id="sbar" placeholder="Search for any song :D">
+          <a href="#" class="search_icon"><i class="fas fa-search"></i></a>
+          <script>
+            var typingTimer;                //timer identifier
+            var doneTypingInterval = 1500;  //time in ms (5 seconds)
+            var searchtext;
+            //on keyup, start the countdown
+            $('#sbar').keyup(function(){
+                clearTimeout(typingTimer);
+                if ($('#sbar').val()) {
+                    searchtext = $('#sbar').val()
+                    typingTimer = setTimeout(doneTyping, doneTypingInterval);
+                }
+            });
+
+            //user is "finished typing," do something
+            function doneTyping () {
+                var query = {q:searchtext}
+                json = JSON.stringify(query)
+                $.ajax({
+                    url: '/search',
+                    data: json,
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function(response) {
+                        var results = response['tracks']['items']
+                        var searchlist = document.createElement('div')
+                        searchlist.setAttribute("class","list-group justify-content-center overflow-auto")
+                        searchlist.setAttribute("id","searchlist")
+
+                        for(i=0;i<results.length;i++){
+                            var track_name = results[i]['name']
+                            var artist = results[i]['artists'][0]['name']
+                            var spotify_id = results[i]['id']
+                            var track_img = results[i]['album']['images'][2]['url']
+
+                            var search_item  = document.createElement('div')
+                            search_item.setAttribute("class","list-group-item list-group-item-action flex-row align-items-start row")
+                            var img_box = document.createElement('div')
+                            img_box.setAttribute("class","col")
+                            var img = document.createElement('img')
+                            img.setAttribute("src",track_img)
+                            img.setAttribute("style","height:64px;width:64px;")
+                            img_box.append(img)
+                            var info_box = document.createElement('div')
+                            info_box.setAttribute("class","col")
+                            info_box.innerHTML = "<p>"+track_name+"<br>"+artist+"<br>ID:"+spotify_id+"</p>"
+                            var add_song_btn = document.createElement('button')
+                            add_song_btn.setAttribute('class','btn btn-danger')
+                            add_song_btn.setAttribute('id','add_button_' + i.toString())
+                            var current_id = '#add_button_' + i.toString()
+
+                            $("#outer").on("click",current_id,function(){
+                                console.log(spotify_id);
+                                $.ajax({
+                                    url:"/addSong",
+                                    data:JSON.stringify({id:spotify_id}),
+                                    type: 'POST',
+                                    contentType: 'application/json',
+                                    success: function(response){
+                                        var x = document.getElementById("snackbar");
+                                        x.innerHTML = response['msg']
+                                        x.className = "show";
+                                        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+                                    },
+                                    error: function(error) {
+                                        console.log(error);
+                                    }
+                                })
+                            })
+                            add_song_btn.innerHTML = "Add song"
+                            info_box.append(add_song_btn)
+                            search_item.append(img_box)
+                            search_item.append(info_box)
+                            searchlist.append(search_item)
+                        }
+
+                        document.getElementById("outer").append(searchlist)
+                        // $('#searchlist').css('display','block')
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            $('#outer').on({
+                'focus': function () {
+                    console.log("Hello");
+                    if ($(this).val()){
+                        $(this).parent().children("#searchlist").css({"display":"block"})
+                    }
+                },
+                'blur': function () {
+                    $(this).parent().children("#searchlist").css({"display":"none"})
+                }
+            }, '#search_input');
+            //user is "finished typing,"
+          </script>
+          </div>
+        </div>
+    </div>
+    <div id="snackbar"></div>
+    </body>
+</html>
